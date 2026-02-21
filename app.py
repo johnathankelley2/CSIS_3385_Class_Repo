@@ -24,21 +24,47 @@ except FileNotFoundError:
 
 
 # GET: Return all users
-# cRud snippet goes here
-
+@app.route("/users", methods=["GET"])
+def get_users():
+    return jsonify(users), 200
 
 # POST: Add a new user
-# Crud snippet goes here
+@app.route("/users", methods=["POST"])
+def create_user():
+    data = request.get_json()
+    new_user = {
+        "id": len(users) + 1,
+        "username": data["username"],
+        "password": data["password"],
+        "email": data["email"],
+        "age": data["age"]
+    }
+    users.append(new_user)
+    return jsonify(new_user), 201
 
 
 
 # PUT: Update user by ID
-# crUd snippet goes here
+@app.route("/users/<int:user_id>", methods=["PUT"])
+def update_user(user_id):
+    data = request.get_json()
+    for user in users:
+        if user["id"] == user_id:
+            user["username"] = data["username"]
+            user["password"] = data["password"]
+            user["email"] = data["email"]
+            user["age"] = data["age"]
+            return jsonify(user), 200
+    return jsonify({"error": "User not found"}), 404
 
 
 
 # DELETE: Remove user by ID
-# cruD snippet goes here
+@app.route("/users/<int:user_id>", methods=["DELETE"])
+def delete_user(user_id):
+    global users
+    users = [u for u in users if u["id"] != user_id]
+    return jsonify({"message": "User deleted"}), 200
 
 
 
